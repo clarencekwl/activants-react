@@ -8,7 +8,7 @@ const EditPostPage = () => {
     const navigate = useNavigate();
     const { editPostInFirestore } = useFirestore();
     const { state: { post } } = useLocation();
-
+    const [submitting, setSubmitting] = useState(false)
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
 
@@ -28,6 +28,7 @@ const EditPostPage = () => {
         }
 
         try {
+            setSubmitting(true);
             if (post.postId) {
                 await editPostInFirestore(post.postId, title, body);
                 console.log('Post edited successfully!');
@@ -40,6 +41,8 @@ const EditPostPage = () => {
             navigate('/posts', { replace: true });
         } catch (error) {
             console.error('Error:', error);
+        } finally {
+            setSubmitting(false);
         }
     };
     return (
@@ -66,7 +69,7 @@ const EditPostPage = () => {
                     className="input"
                 />
 
-                <button type="submit" className="button">
+                <button type="submit" disabled={submitting} className="button">
                     Submit
                 </button>
             </form>

@@ -8,7 +8,7 @@ const CreatePostPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
     const { addPostToFirestore } = useFirestore();
-
+    const [submitting, setSubmitting] = useState(false)
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
 
@@ -21,6 +21,7 @@ const CreatePostPage = () => {
         }
 
         try {
+            setSubmitting(true);
             await addPostToFirestore(user.id, title, body);
 
             setTitle('');
@@ -30,6 +31,8 @@ const CreatePostPage = () => {
             navigate('/posts', { replace: true });
         } catch (error) {
             console.error('Error adding post to Firestore:', error);
+        } finally {
+            setSubmitting(false);
         }
     };
 
@@ -57,7 +60,7 @@ const CreatePostPage = () => {
                     className="input"
                 />
 
-                <button type="submit" className="button">
+                <button type="submit" disabled={submitting} className="button">
                     Submit
                 </button>
             </form>

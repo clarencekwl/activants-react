@@ -8,6 +8,7 @@ const PostsPage = () => {
   const { getPostsByUserId, deletePost } = useFirestore();
   const [userPosts, setUserPosts] = useState([]);
   const navigate = useNavigate();
+  const [submitting, setSubmitting] = useState(false)
 
 
   useEffect(() => {
@@ -31,13 +32,15 @@ const PostsPage = () => {
 
   const handleDelete = async (postId) => {
     try {
-
+      setSubmitting(true);
       await deletePost(postId);
 
       const updatedPosts = await getPostsByUserId(user.id);
       setUserPosts(updatedPosts);
     } catch (error) {
       console.error('Error deleting post:', error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -54,7 +57,7 @@ const PostsPage = () => {
             <button style={editButtonStyle} onClick={() => handleEdit(post)}>
               Edit
             </button>
-            <button style={deleteButtonStyle} onClick={() => handleDelete(post.postId)}>
+            <button disabled={submitting} style={deleteButtonStyle} onClick={() => handleDelete(post.postId)}>
               Delete
             </button>
           </div>
