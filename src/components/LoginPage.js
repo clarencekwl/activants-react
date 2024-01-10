@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import { useFirestore } from '../FirestoreContext';
 
 const LoginPage = () => {
   const [email, setEmail] = useState('');
@@ -9,6 +10,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
+  const { getUser } = useFirestore();
 
   const handleLogin = async () => {
     // Validation: Check if email and password are not empty
@@ -19,8 +21,8 @@ const LoginPage = () => {
 
     try {
       // Sign in the user using Firebase authentication
-      await login(email, password);
-
+      const user = await login(email, password);
+      await getUser(user.uid);
       // Clear previous error message
       setError('');
 

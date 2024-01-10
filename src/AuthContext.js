@@ -1,14 +1,14 @@
 // AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import { createUserWithEmailAndPassword } from "firebase/auth";
-import { signInWithEmailAndPassword } from "firebase/auth";
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from './config/firebase';
+
 
 const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
-  const [loggedIn, setLoggedIn] = useState(false);
+  // const [loggedIn, setLoggedIn] = useState(false);
 
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
@@ -27,8 +27,9 @@ export const AuthProvider = ({ children }) => {
   const login = async (email, password) => {
     try {
       // Perform login with Firebase authentication
-      await signInWithEmailAndPassword(auth, email, password);
-      setLoggedIn(true);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      return userCredential.user;
+      // setLoggedIn(true);
     } catch (error) {
       console.error('Error logging in:', error);
       throw error;
@@ -38,8 +39,10 @@ export const AuthProvider = ({ children }) => {
   const signup = async (email, password) => {
     try {
       // Perform signup with Firebase authentication
-      await createUserWithEmailAndPassword(auth, email, password);
-      setLoggedIn(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // setLoggedIn(true);
+
+      return userCredential.user;
     } catch (error) {
       console.log('Error signing up:', error);
       throw error;
@@ -50,7 +53,7 @@ export const AuthProvider = ({ children }) => {
     try {
       // Perform logout with Firebase authentication
       await auth.signOut();
-      setLoggedIn(false);
+      // setLoggedIn(false);
     } catch (error) {
       console.error('Error logging out:', error);
       throw error;
@@ -58,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   };
 
   return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, login, signup, logout, setUser }}>
       {children}
     </AuthContext.Provider>
   );

@@ -27,7 +27,7 @@ const Header = () => {
       <div style={userSectionStyle}>
         {user ? (
           <>
-            <p style={welcomeTextStyle}>Welcome, {user.displayName}</p>
+            <p style={welcomeTextStyle}>Welcome, {user.username}</p>
             <button onClick={handleLogout} style={signOutButtonStyle}>
               Sign Out
             </button>

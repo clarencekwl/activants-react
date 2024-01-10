@@ -2,13 +2,16 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
+import { useFirestore } from '../FirestoreContext';
 
 const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [username, setUsername] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { signup } = useAuth(); // Assuming your useAuth hook provides a signup function
+  const { signup } = useAuth();
+  const { addUserToFirestore } = useFirestore();
 
   const handleSignUp = async () => {
     // Validation: Check if email and password are not empty
@@ -26,7 +29,10 @@ const SignUpPage = () => {
 
     try {
       // Sign up the user using the signup function from useAuth
-      await signup(email, password);
+      const user = await signup(email, password);
+
+      // Add user information to Firestore
+      await addUserToFirestore(user.uid, email, username);
 
       // Clear previous error message
       setError('');
@@ -40,7 +46,6 @@ const SignUpPage = () => {
       console.error('Error signing up:', error);
     }
   };
-
   return (
     <div style={containerStyle}>
       <h2 style={{ color: '#333' }}>Sign Up</h2>
@@ -56,6 +61,16 @@ const SignUpPage = () => {
         </label>
         <br />
         <label>
+          Username: {/* Add a username input field */}
+          <input
+            type="text"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            style={inputStyle}
+          />
+        </label>
+        <br />
+        <label>
           Password:
           <input
             type="password"
@@ -64,6 +79,7 @@ const SignUpPage = () => {
             style={inputStyle}
           />
         </label>
+
         <br />
         {error && <p style={{ color: 'red' }}>{error}</p>}
         <button type="button" onClick={handleSignUp} style={buttonStyle}>
