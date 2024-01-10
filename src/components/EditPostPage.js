@@ -1,16 +1,24 @@
-// CreatePostPage.js
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+// EditPostPage.js
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useFirestore } from '../FirestoreContext';
 import { useAuth } from '../AuthContext';
 
-const CreatePostPage = () => {
+const EditPostPage = () => {
     const { user } = useAuth();
     const navigate = useNavigate();
-    const { addPostToFirestore } = useFirestore();
+    const { editPostInFirestore } = useFirestore();
+    const { state: { post } } = useLocation();
 
     const [title, setTitle] = useState('');
     const [body, setBody] = useState('');
+
+    useEffect(() => {
+        if (post) {
+            setTitle(post.title || '');
+            setBody(post.body || '');
+        }
+    }, [post]);
 
     const handleFormSubmit = async (e) => {
         e.preventDefault();
@@ -21,22 +29,23 @@ const CreatePostPage = () => {
         }
 
         try {
-            await addPostToFirestore(user.id, title, body);
-
-            // Reset the form after successfully adding a post
+            if (post.postId) {
+                await editPostInFirestore(post.postId, title, body);
+                console.log('Post edited successfully!');
+            } else {
+                console.log("no such post");
+            }
             setTitle('');
             setBody('');
 
-            console.log('Post added successfully!');
             navigate('/posts', { replace: true });
         } catch (error) {
-            console.error('Error adding post to Firestore:', error);
+            console.error('Error:', error);
         }
     };
-
     return (
         <div style={containerStyle}>
-            <h2>Create Post</h2>
+            <h2>Edit Post</h2>
             <form style={formStyle} onSubmit={handleFormSubmit}>
                 <label htmlFor="title">Title:</label>
                 <input
@@ -70,10 +79,10 @@ const CreatePostPage = () => {
 const containerStyle = {
     display: 'flex',
     flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    marginTop: '-50px',
+    alignItems: 'center', // Center horizontally
+    justifyContent: 'center', // Center vertically
+    height: '100vh', // Use full viewport height
+    marginTop: '-50px', // Adjust the top margin to move the form higher up
 };
 
 const formStyle = {
@@ -100,4 +109,4 @@ const buttonStyle = {
     width: '100%', // Make the button full width
 };
 
-export default CreatePostPage;
+export default EditPostPage;

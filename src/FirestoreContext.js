@@ -1,21 +1,19 @@
-// FirestoreContext.js
+
 import React, { createContext, useContext } from 'react';
 import { firestore } from './config/firebase';
-import { collection, doc, setDoc, getDoc, getDocs, query, where } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
 import User from './models/User'
-
+import Post from './models/Post'
 
 const FirestoreContext = createContext();
 
 export const FirestoreProvider = ({ children }) => {
     const { setUser } = useAuth();
 
-    // Function to add user information to Firestore
     const addUserToFirestore = async (uid, email, username) => {
         const usersRef = collection(firestore, 'users');
 
-        // Add a new document with the user's UID as the document ID
         const userDoc = doc(usersRef, uid);
         await setDoc(userDoc, {
             email: email,
@@ -65,9 +63,12 @@ export const FirestoreProvider = ({ children }) => {
             const postsSnapshot = await getDocs(q);
 
             if (!postsSnapshot.empty) {
-                return postsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+                return postsSnapshot.docs.map((doc) => {
+                    const data = doc.data();
+                    return new Post(doc.id, data.userId, data.title, data.body);
+                });
             } else {
-                console.error('No posts found for the user.');
+                console.log('No posts found for the user.');
                 return [];
             }
         } catch (error) {
@@ -76,8 +77,27 @@ export const FirestoreProvider = ({ children }) => {
         }
     };
 
+    const deletePost = async (postId) => {
+        const postRef = doc(collection(firestore, 'posts'), postId);
+        await deleteDoc(postRef);
+    };
+
+    const editPostInFirestore = async (postId, title, body) => {
+        const postRef = doc(collection(firestore, 'posts'), postId);
+
+        try {
+            await setDoc(postRef, {
+                title: title,
+                body: body,
+            }, { merge: true });
+        } catch (error) {
+            console.error('Error editing post:', error);
+            throw error;
+        }
+    };
+
     return (
-        <FirestoreContext.Provider value={{ addUserToFirestore, initUser, addPostToFirestore, getPostsByUserId }}>
+        <FirestoreContext.Provider value={{ addUserToFirestore, initUser, addPostToFirestore, getPostsByUserId, deletePost, editPostInFirestore }}>
             {children}
         </FirestoreContext.Provider>
     );
