@@ -25,5 +25,5 @@ Make sure you have Node.js and npm installed on your machine.
    ```bash
    npm install
 4. Run the application
-```bash
-   npm start
+   ```bash
+      npm start
