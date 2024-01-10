@@ -1,8 +1,7 @@
-// EditPostPage.js
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { useFirestore } from '../FirestoreContext';
-import { useAuth } from '../AuthContext';
+import { useFirestore } from '../providers/FirestoreContext';
+import { useAuth } from '../providers/AuthContext';
 
 const EditPostPage = () => {
     const { user } = useAuth();

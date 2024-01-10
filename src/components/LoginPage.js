@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
-import { useFirestore } from '../FirestoreContext';
+import { useAuth } from '../providers/AuthContext';
+import { useFirestore } from '../providers/FirestoreContext';
 import '../styles/AuthStyle.css';
 
 const LoginPage = () => {

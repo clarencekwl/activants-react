@@ -1,7 +1,6 @@
-// PostsPage.js
 import React, { useEffect, useState } from 'react';
-import { useFirestore } from '../FirestoreContext';
-import { useAuth } from '../AuthContext';
+import { useFirestore } from '../providers/FirestoreContext';
+import { useAuth } from '../providers/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 
 const PostsPage = () => {
@@ -32,65 +31,15 @@ const PostsPage = () => {
 
   const handleDelete = async (postId) => {
     try {
-      // Call the function to delete the post
+
       await deletePost(postId);
 
-      // Refresh the posts after deletion
       const updatedPosts = await getPostsByUserId(user.id);
       setUserPosts(updatedPosts);
     } catch (error) {
       console.error('Error deleting post:', error);
     }
   };
-
-  const containerStyle = {
-    padding: '50px',
-  };
-
-  const cardStyle = {
-    border: '1px solid #ddd',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '15px',
-    boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-    display: 'flex',
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  };
-
-  const buttonStyle = {
-    backgroundColor: 'purple',
-    color: 'white',
-    padding: '15px',
-    borderRadius: '10px',
-    position: 'fixed',
-    bottom: '20px',
-    right: '20px',
-    cursor: 'pointer',
-  };
-
-  const deleteButtonStyle = {
-    backgroundColor: '#ff6666',
-    color: '#fff',
-    padding: '8px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-  };
-
-
-
-
-  const editButtonStyle = {
-    backgroundColor: 'blue', // Set the desired blue color
-    color: 'white',
-    padding: '8px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    marginRight: '10px', // Add margin to separate the Edit button from the Delete button
-  };
-
-
 
   return (
     <div style={containerStyle}>
@@ -116,5 +65,54 @@ const PostsPage = () => {
       </Link>
     </div>
   );
+
+
 };
+const containerStyle = {
+  padding: '50px',
+};
+
+const cardStyle = {
+  border: '1px solid #ddd',
+  borderRadius: '8px',
+  padding: '20px',
+  marginBottom: '15px',
+  boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
+  display: 'flex',
+  flexDirection: 'row',
+  justifyContent: 'space-between',
+  alignItems: 'center',
+};
+
+const buttonStyle = {
+  backgroundColor: 'purple',
+  color: 'white',
+  padding: '15px',
+  borderRadius: '10px',
+  position: 'fixed',
+  bottom: '20px',
+  right: '20px',
+  cursor: 'pointer',
+};
+
+const deleteButtonStyle = {
+  backgroundColor: '#ff6666',
+  color: '#fff',
+  padding: '8px',
+  borderRadius: '5px',
+  cursor: 'pointer',
+};
+
+
+
+
+const editButtonStyle = {
+  backgroundColor: 'blue',
+  color: 'white',
+  padding: '8px',
+  borderRadius: '5px',
+  cursor: 'pointer',
+  marginRight: '10px',
+};
+
 export default PostsPage;

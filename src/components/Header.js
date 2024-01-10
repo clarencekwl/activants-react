@@ -1,7 +1,6 @@
-// Header.js
 import React from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../AuthContext';
+import { useAuth } from '../providers/AuthContext';
 
 const Header = () => {
   const { user, logout } = useAuth();

@@ -1,10 +1,10 @@
 
 import React, { createContext, useContext } from 'react';
-import { firestore } from './config/firebase';
+import { firestore } from '../config/firebase';
 import { collection, doc, setDoc, getDoc, getDocs, deleteDoc, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
-import User from './models/User'
-import Post from './models/Post'
+import User from '../models/User'
+import Post from '../models/Post'
 
 const FirestoreContext = createContext();
 

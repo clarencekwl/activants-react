@@ -1,7 +1,6 @@
-// AuthContext.js
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from './config/firebase';
+import { auth } from '../config/firebase';
 
 
 const AuthContext = createContext();
@@ -13,20 +12,18 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const unsubscribe = auth.onAuthStateChanged((authUser) => {
       if (authUser) {
-        // User is signed in
         setUser(authUser);
       } else {
-        // User is signed out
         setUser(null);
       }
     });
 
-    return () => unsubscribe(); // Cleanup the subscription on component unmount
+    return () => unsubscribe();
   }, []);
 
   const login = async (email, password) => {
     try {
-      // Perform login with Firebase authentication
+
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
       return userCredential.user;
       // setLoggedIn(true);
@@ -38,7 +35,7 @@ export const AuthProvider = ({ children }) => {
 
   const signup = async (email, password) => {
     try {
-      // Perform signup with Firebase authentication
+
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
       // setLoggedIn(true);
 
@@ -51,7 +48,7 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
-      // Perform logout with Firebase authentication
+
       await auth.signOut();
       // setLoggedIn(false);
     } catch (error) {

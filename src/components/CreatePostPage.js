@@ -1,8 +1,7 @@
-// CreatePostPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useFirestore } from '../FirestoreContext';
-import { useAuth } from '../AuthContext';
+import { useFirestore } from '../providers/FirestoreContext';
+import { useAuth } from '../providers/AuthContext';
 import '../styles/PostFormStyle.css';
 
 const CreatePostPage = () => {
@@ -24,7 +23,6 @@ const CreatePostPage = () => {
         try {
             await addPostToFirestore(user.id, title, body);
 
-            // Reset the form after successfully adding a post
             setTitle('');
             setBody('');
 
