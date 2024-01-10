@@ -1,8 +1,9 @@
 // FirestoreContext.js
 import React, { createContext, useContext } from 'react';
 import { firestore } from './config/firebase';
-import { collection, doc, setDoc, getDoc } from 'firebase/firestore';
+import { collection, doc, setDoc, getDoc, getDocs, query, where } from 'firebase/firestore';
 import { useAuth } from './AuthContext';
+import User from './models/User'
 
 
 const FirestoreContext = createContext();
@@ -21,15 +22,11 @@ export const FirestoreProvider = ({ children }) => {
             username: username,
         });
 
-        // After updating Firestore, update the user in AuthContext
-        setUser({
-            uid: uid,
-            email: email,
-            username: username,
-        });
+        setUser(new User(uid, username, email));
+
     };
 
-    const getUser = async (uid) => {
+    const initUser = async (uid) => {
         const usersRef = collection(firestore, 'users');
         const userDoc = doc(usersRef, uid);
 
@@ -39,12 +36,7 @@ export const FirestoreProvider = ({ children }) => {
             if (userSnapshot.exists()) {
                 const userData = userSnapshot.data();
 
-                // Set the user in AuthContext
-                setUser({
-                    uid: uid,
-                    email: userData.email,
-                    username: userData.username,
-                });
+                setUser(new User(uid, userData.username, userData.email));
 
             } else {
                 console.error('User not found in Firestore.');
@@ -55,13 +47,41 @@ export const FirestoreProvider = ({ children }) => {
         }
     };
 
+
+    const addPostToFirestore = async (userId, title, body) => {
+        const postsRef = collection(firestore, 'posts');
+        await setDoc(doc(postsRef), {
+            userId: userId,
+            title: title,
+            body: body,
+        });
+    };
+
+    const getPostsByUserId = async (userId) => {
+        const postsRef = collection(firestore, 'posts');
+        const q = query(postsRef, where('userId', '==', userId));
+
+        try {
+            const postsSnapshot = await getDocs(q);
+
+            if (!postsSnapshot.empty) {
+                return postsSnapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+            } else {
+                console.error('No posts found for the user.');
+                return [];
+            }
+        } catch (error) {
+            console.error('Error fetching posts:', error);
+            throw error;
+        }
+    };
+
     return (
-        <FirestoreContext.Provider value={{ addUserToFirestore, getUser }}>
+        <FirestoreContext.Provider value={{ addUserToFirestore, initUser, addPostToFirestore, getPostsByUserId }}>
             {children}
         </FirestoreContext.Provider>
     );
 };
-
 export const useFirestore = () => {
     return useContext(FirestoreContext);
 };

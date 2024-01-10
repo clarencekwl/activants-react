@@ -10,7 +10,7 @@ const LoginPage = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { getUser } = useFirestore();
+  const { initUser } = useFirestore();
 
   const handleLogin = async () => {
     // Validation: Check if email and password are not empty
@@ -22,7 +22,8 @@ const LoginPage = () => {
     try {
       // Sign in the user using Firebase authentication
       const user = await login(email, password);
-      await getUser(user.uid);
+      console.log("user id after login: ", user.uid);
+      await initUser(user.uid);
       // Clear previous error message
       setError('');
 
