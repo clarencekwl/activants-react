@@ -1,42 +1,47 @@
 // Header.js
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
 const Header = () => {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
+  const location = useLocation();
 
-  const handleLogout = () => {
-    // Perform any logout logic (clear session, etc.)
-    logout();
-
-    // Redirect to the login page
-    navigate('/');
+  const handleLogout = async () => {
+    try {
+      await logout();
+      navigate('/');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
   };
 
   return (
     <header style={headerStyle}>
       <div>
-        <Link to={user ? '/posts' : '/'}> {/* Conditional link based on user's authentication status */}
+        <Link to={user ? '/posts' : '/'}>
           <h1>Company B</h1>
         </Link>
       </div>
       <div style={userSectionStyle}>
         {user ? (
-          <p style={welcomeTextStyle}>Welcome, {user.username}</p>
+          <>
+            <p style={welcomeTextStyle}>Welcome, {user.displayName}</p>
+            <button onClick={handleLogout} style={signOutButtonStyle}>
+              Sign Out
+            </button>
+          </>
         ) : (
-            <h2>Login</h2>
-        )}
-        {user && (
-          <button onClick={handleLogout} style={signOutButtonStyle}>
-            Sign Out
-          </button>
+          <Link to={location.pathname === '/login' ? '/' : '/login'}>
+            <p style={textStyle}>{location.pathname === '/login' ? 'Sign Up' : 'Login'} </p>
+          </Link>
         )}
       </div>
     </header>
   );
 };
+
 
 const headerStyle = {
   display: 'flex',
@@ -49,6 +54,10 @@ const userSectionStyle = {
   display: 'flex',
   alignItems: 'center',
 };
+
+const textStyle = {
+  fontSize: '1.5rem',
+}
 
 const welcomeTextStyle = {
   marginRight: '20px',

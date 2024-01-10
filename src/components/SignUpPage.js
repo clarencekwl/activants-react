@@ -1,42 +1,49 @@
-// LoginPage.js
+// SignUpPage.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../AuthContext';
 
-const LoginPage = () => {
+const SignUpPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { signup } = useAuth(); // Assuming your useAuth hook provides a signup function
 
-  const handleLogin = async () => {
+  const handleSignUp = async () => {
     // Validation: Check if email and password are not empty
     if (!email.trim() || !password.trim()) {
       setError('Email and password are required.');
       return;
     }
 
+    // Password validation
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%^&*()_+{}|:"<>?~`]).{8,}$/;
+    if (!passwordRegex.test(password)) {
+      setError('Password must contain at least one lowercase letter, one uppercase letter, and one special character.');
+      return;
+    }
+
     try {
-      // Sign in the user using Firebase authentication
-      await login(email, password);
+      // Sign up the user using the signup function from useAuth
+      await signup(email, password);
 
       // Clear previous error message
       setError('');
 
-      // Redirect to the posts page
+      // Redirect to the login page
       navigate('/posts', { replace: true });
 
     } catch (error) {
       // Handle authentication errors
-      setError('Authentication failed. Please check your email and password.');
-      console.error('Error signing in:', error);
+      setError('Sign-up failed. Please check your email and password.');
+      console.error('Error signing up:', error);
     }
   };
 
   return (
     <div style={containerStyle}>
-      <h2 style={{ color: '#333' }}>Login Page</h2>
+      <h2 style={{ color: '#333' }}>Sign Up</h2>
       <form style={formStyle}>
         <label>
           Email:
@@ -59,14 +66,13 @@ const LoginPage = () => {
         </label>
         <br />
         {error && <p style={{ color: 'red' }}>{error}</p>}
-        <button type="button" onClick={handleLogin} style={buttonStyle}>
-          Login
+        <button type="button" onClick={handleSignUp} style={buttonStyle}>
+          Sign Up
         </button>
       </form>
     </div>
   );
 };
-
 
 const containerStyle = {
   display: 'flex',
@@ -100,4 +106,4 @@ const buttonStyle = {
   width: '100%', // Make the button full width
 };
 
-export default LoginPage;
+export default SignUpPage;
