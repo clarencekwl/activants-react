@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useFirestore } from '../FirestoreContext';
 import { useAuth } from '../AuthContext';
+import '../styles/PostFormStyle.css';
 
 const CreatePostPage = () => {
     const { user } = useAuth();
@@ -35,9 +36,9 @@ const CreatePostPage = () => {
     };
 
     return (
-        <div style={containerStyle}>
+        <div className="container">
             <h2>Create Post</h2>
-            <form style={formStyle} onSubmit={handleFormSubmit}>
+            <form className="form" onSubmit={handleFormSubmit}>
                 <label htmlFor="title">Title:</label>
                 <input
                     type="text"
@@ -45,7 +46,7 @@ const CreatePostPage = () => {
                     name="title"
                     value={title}
                     onChange={(e) => setTitle(e.target.value)}
-                    style={inputStyle}
+                    className="input"
                 />
 
                 <label htmlFor="body">Body:</label>
@@ -55,10 +56,10 @@ const CreatePostPage = () => {
                     rows="4"
                     value={body}
                     onChange={(e) => setBody(e.target.value)}
-                    style={inputStyle}
+                    className="input"
                 />
 
-                <button type="submit" style={buttonStyle}>
+                <button type="submit" className="button">
                     Submit
                 </button>
             </form>
@@ -66,38 +67,5 @@ const CreatePostPage = () => {
     );
 };
 
-
-const containerStyle = {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100vh',
-    marginTop: '-50px',
-};
-
-const formStyle = {
-    background: '#f0f0f0', // Set background color
-    padding: '20px',
-    borderRadius: '8px',
-    boxShadow: '0 0 10px rgba(0, 0, 0, 0.1)', // Add a subtle box shadow
-    width: '300px', // Set a specific width for the form
-};
-
-const inputStyle = {
-    marginBottom: '10px',
-    padding: '8px',
-    width: '100%',
-    boxSizing: 'border-box',
-};
-
-const buttonStyle = {
-    background: '#333', // Set background color
-    color: '#fff', // Set text color
-    padding: '10px',
-    borderRadius: '5px',
-    cursor: 'pointer',
-    width: '100%', // Make the button full width
-};
 
 export default CreatePostPage;
